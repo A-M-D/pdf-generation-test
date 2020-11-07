@@ -16,11 +16,6 @@ namespace Pdf.Controllers
     [Route("[controller]")]
     public class PdfController : ControllerBase
     {
-        private static readonly string[] Summaries = new[]
-        {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
-
         private readonly ILogger<PdfController> _logger;
 
         public PdfController(ILogger<PdfController> logger)
@@ -59,11 +54,13 @@ namespace Pdf.Controllers
         {
             var browser = await GetBrowser();
             var sb = new StringBuilder();
-            
+
             using (var reader = new StreamReader(file.OpenReadStream()))
             {
                 while (reader.Peek() >= 0)
-                    sb.AppendLine(await reader.ReadLineAsync()); 
+                {
+                    sb.AppendLine(await reader.ReadLineAsync());
+                }
             }
 
             using (var page = await browser.NewPageAsync())
@@ -77,6 +74,14 @@ namespace Pdf.Controllers
 
         private async Task<Browser> GetBrowser()
         {
+            var executablePath = Environment.GetEnvironmentVariable("PUPPETEER_EXECUTABLE_PATH");
+
+            // No custom path specified, download required
+            if (string.IsNullOrEmpty(executablePath))
+            {
+                await new BrowserFetcher().DownloadAsync(BrowserFetcher.DefaultRevision);
+            }
+
             return await Puppeteer.LaunchAsync(new LaunchOptions
             {
                 Headless = true,
