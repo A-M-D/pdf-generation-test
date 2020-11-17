@@ -28,9 +28,9 @@ namespace Services
                 Format = PaperFormat.A4,
                 MarginOptions = new MarginOptions
                 {
-                    Top = "25mm",
+                    Top = "15mm",
                     Right = "0mm",
-                    Bottom = "25mm",
+                    Bottom = "15mm",
                     Left = "0mm"
                 }
             };

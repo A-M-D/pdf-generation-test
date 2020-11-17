@@ -5,10 +5,35 @@
 <head>
   <meta charset="utf-8">
   <title>Content</title>
+
+  <style>
+    html {
+      -webkit-print-color-adjust: exact;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    article {
+      background-color: tomato;
+      color: white;
+      text-align: center;
+      vertical-align: middle;
+    }
+
+    .page {
+      page-break-after: always;
+      font-size: 14px;
+    }
+  </style>
 </head>
 
 <body>
-  <h1>Content</h1>
+  <article class="page">
+    <h1>content</h1>
+  </article>
 </body>
 
 </html>
