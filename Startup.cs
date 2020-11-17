@@ -1,3 +1,4 @@
+using Backgrounding;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -18,7 +19,9 @@ namespace Pdf
 
         public void ConfigureServices(IServiceCollection services)
         {
-
+            services.Configure<HtmlWatcherOptions>(Configuration.GetSection(HtmlWatcherOptions.HtmlWatcher));
+            services.AddHttpClient();
+            services.AddHostedService<HtmlWatcherBackgroundService>();
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {

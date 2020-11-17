@@ -1,0 +1,14 @@
+version: '3.4'
+
+services:
+  pdf:
+    image: pdf
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    environment:
+      - HtmlWatcher__HtmlWatcherPath=/html
+    ports:
+      - 5000
+    volumes:
+      - ./html:/html
