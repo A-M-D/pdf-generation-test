@@ -15,14 +15,14 @@ namespace Backgrounding
     public class HtmlWatcherBackgroundService : BackgroundService
     {
         private readonly ILogger<HtmlWatcherBackgroundService> _logger;
-        private readonly HttpClient _httpClient;
+        private readonly HtmlProcessingService _htmlProcessingService;
         private readonly string _filepath;
         private FileSystemWatcher _htmlFileWatcher;
 
-        public HtmlWatcherBackgroundService(ILogger<HtmlWatcherBackgroundService> logger, IHttpClientFactory httpClient, IOptions<HtmlWatcherOptions> options)
+        public HtmlWatcherBackgroundService(ILogger<HtmlWatcherBackgroundService> logger, HtmlProcessingService htmlProcessingService, IOptions<HtmlWatcherOptions> options)
         {
             _logger = logger;
-            _httpClient = httpClient.CreateClient();
+            _htmlProcessingService = htmlProcessingService;
             _filepath = options.Value.HtmlWatcherPath;
         }
 
@@ -43,9 +43,13 @@ namespace Backgrounding
 
             _logger.LogInformation($"Using folder: {_filepath}");
 
+            var files = Directory.GetFiles(_filepath);
+            var stringifiedFileNames = string.Join(", ", files);
+            _logger.LogInformation($"{stringifiedFileNames} found");
+
             _htmlFileWatcher = new FileSystemWatcher(_filepath, "*.html")
             {
-                NotifyFilter = NotifyFilters.Size
+                NotifyFilter = NotifyFilters.LastAccess | NotifyFilters.LastWrite | NotifyFilters.Size | NotifyFilters.FileName | NotifyFilters.DirectoryName | NotifyFilters.CreationTime
             };
 
             _htmlFileWatcher.Changed += (s, e) => OnChanged(s, e, cancellationToken);
@@ -77,55 +81,9 @@ namespace Backgrounding
         private async void OnChanged(object sender, FileSystemEventArgs e, CancellationToken cancellationToken)
         {
             _logger.LogInformation($"File '{e.Name}' {e.ChangeType.ToString().ToLower()}");
-
             if (e.Name == "content.html" || e.Name == "header.html" || e.Name == "footer.html")
             {
-                string content, header, footer;
-
-                using (var sr = new StreamReader(Path.Combine(_filepath, "content.html")))
-                {
-                    content = sr.ReadToEnd();
-                }
-
-                using (var sr = new StreamReader(Path.Combine(_filepath, "header.html")))
-                {
-                    header = sr.ReadToEnd();
-                }
-
-                using (var sr = new StreamReader(Path.Combine(_filepath, "footer.html")))
-                {
-                    footer = sr.ReadToEnd();
-                }
-
-                var model = PdfModelCreator.GetBody(content, header, footer);
-                var json = new StringContent(model.ToString(), Encoding.UTF8, "application/json");
-
-                var url = "http://localhost:5000/puppeteer";
-                _logger.LogInformation($"Posting to {url}");
-
-                var response = await _httpClient.PostAsync(url, json, cancellationToken);
-
-                _logger.LogInformation(response.StatusCode.ToString());
-
-                response.EnsureSuccessStatusCode();
-
-                var fileInfo = new FileInfo(Path.Combine(_filepath, "PuppeteerPdf.pdf"));
-
-                try
-                {
-                    using (var ms = await response.Content.ReadAsStreamAsync(cancellationToken))
-                    using (var fs = File.Create(fileInfo.FullName))
-                    {
-                        ms.Seek(0, SeekOrigin.Begin);
-                        ms.CopyTo(fs);
-                    }
-                }
-                catch (IOException ex)
-                {
-                    _logger.LogError($"Could not open file {fileInfo.FullName}, {ex.Message}");
-                }
-
-                _logger.LogInformation($"Saved file {fileInfo.FullName}");
+                await _htmlProcessingService.Process(cancellationToken);
             }
         }
     }

@@ -21,7 +21,9 @@ namespace Pdf
         {
             services.Configure<HtmlWatcherOptions>(Configuration.GetSection(HtmlWatcherOptions.HtmlWatcher));
             services.AddHttpClient();
-            services.AddHostedService<HtmlWatcherBackgroundService>();
+            services.AddScoped<HtmlProcessingService>();
+            // services.AddHostedService<HtmlWatcherBackgroundService>(); FileSystemWatcher does not detect changes on windows/docker
+            services.AddHostedService<HtmlPollingBackgroundService>();
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
