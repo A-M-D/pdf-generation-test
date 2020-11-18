@@ -3,34 +3,38 @@
 <html lang="en">
 
 <head>
-  <meta charset="utf-8">
-  <title>Footer</title>
+    <meta charset="utf-8">
+    <title>Footer</title>
 
-  <style>
-    html {
-      -webkit-print-color-adjust: exact;
-    }
+    <style>
+        * {
+            font-size: 14px;
+        }
 
-    #footer {
-      margin: 0 !important;
-      padding: 0 !important;
-      font-size: 8px;
-    }
+        html {
+            -webkit-print-color-adjust: exact;
+        }
 
-    footer {
-      width: 100%;
-      height: 100%;
-      background-color: seagreen;
-      color: white;
-      text-align: center;
-    }
-  </style>
+        #footer {
+            padding: 0 !important;
+            width: 21cm;
+        }
+
+        footer {
+            width: 27.93cm;
+            height: calc(100% * 1/.75);
+            transform: scale(0.75);
+            transform-origin: bottom left;
+            background-color: seagreen;
+            color: white;
+        }
+    </style>
 </head>
 
 <body>
-  <footer>
-    <h1>footer</h1>
-  </footer>
+    <footer>
+        footer
+    </footer>
 </body>
 
 </html>

@@ -1,4 +1,4 @@
-namespace Backgrounding
+namespace Backgrounding.Models
 {
     public class HtmlWatcherOptions
     {

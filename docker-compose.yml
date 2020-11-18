@@ -5,10 +5,10 @@ services:
     image: pdf
     build:
       context: .
-      dockerfile: ./Dockerfile
-    environment:
-      - HtmlWatcher__HtmlWatcherPath=/html
+      dockerfile: src/Pdf/Dockerfile
     ports:
       - 5000
+    environment:
+      - HtmlWatcher__HtmlWatcherPath=/html
     volumes:
       - ./html:/html

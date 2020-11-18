@@ -1,16 +1,14 @@
 using System;
 using System.IO;
-using System.Net.Http;
-using System.Text;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Backgrounding.Models;
+using Backgrounding.Services;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Services;
 
-namespace Backgrounding
+namespace Backgrounding.HostedServices
 {
     public class HtmlWatcherBackgroundService : BackgroundService
     {
@@ -49,11 +47,11 @@ namespace Backgrounding
 
             _htmlFileWatcher = new FileSystemWatcher(_filepath, "*.html")
             {
-                NotifyFilter = NotifyFilters.LastAccess | NotifyFilters.LastWrite | NotifyFilters.Size | NotifyFilters.FileName | NotifyFilters.DirectoryName | NotifyFilters.CreationTime
+                NotifyFilter = NotifyFilters.Size
             };
 
-            _htmlFileWatcher.Changed += (s, e) => OnChanged(s, e, cancellationToken);
-            _htmlFileWatcher.Error += (s, e) => OnError(s, e, cancellationToken);
+            _htmlFileWatcher.Changed += (s, e) => OnChanged(e, cancellationToken);
+            _htmlFileWatcher.Error += (s, e) => OnError(e, cancellationToken);
             _htmlFileWatcher.EnableRaisingEvents = true;
 
             return base.StartAsync(cancellationToken);
@@ -73,18 +71,20 @@ namespace Backgrounding
             GC.SuppressFinalize(this);
         }
 
-        private void OnError(object sender, ErrorEventArgs e, CancellationToken cancellationToken)
+        private void OnError(ErrorEventArgs e, CancellationToken cancellationToken)
         {
             _logger.LogInformation($"File Watcher error: {e.GetException().Message}");
         }
 
-        private async void OnChanged(object sender, FileSystemEventArgs e, CancellationToken cancellationToken)
+        private async void OnChanged(FileSystemEventArgs e, CancellationToken cancellationToken)
         {
+            _htmlFileWatcher.EnableRaisingEvents = false;
             _logger.LogInformation($"File '{e.Name}' {e.ChangeType.ToString().ToLower()}");
             if (e.Name == "content.html" || e.Name == "header.html" || e.Name == "footer.html")
             {
                 await _htmlProcessingService.Process(cancellationToken);
             }
+            _htmlFileWatcher.EnableRaisingEvents = true;
         }
     }
 }

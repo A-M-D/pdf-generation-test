@@ -2,6 +2,7 @@ FROM mcr.microsoft.com/dotnet/aspnet:5.0-alpine AS base
 WORKDIR /app
 EXPOSE 5000
 ENV ASPNETCORE_URLS="http://*:5000"
+
 ENV PUPPETEER_EXECUTABLE_PATH "/usr/bin/chromium-browser"
 
 # Puppeteer
@@ -15,14 +16,14 @@ RUN apk update && apk upgrade && \
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /src
-COPY ["Pdf.csproj", "./"]
-RUN dotnet restore "Pdf.csproj"
+COPY ["src/Pdf/Pdf.csproj", "src/Pdf/"]
+RUN dotnet restore "src/Pdf/Pdf.csproj"
 COPY . .
-WORKDIR "/src/."
-RUN dotnet build "Pdf.csproj" -c Release -o /app/build --no-restore
+WORKDIR "/src/src/Pdf"
+RUN dotnet build "Pdf.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "Pdf.csproj" -c Release -o /app/publish --no-restore
+RUN dotnet publish "Pdf.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app

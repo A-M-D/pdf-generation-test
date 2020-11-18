@@ -1,10 +1,15 @@
+using System;
 using Backgrounding;
+using Backgrounding.HostedServices;
+using Backgrounding.Models;
+using Backgrounding.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using Policies;
 
 namespace Pdf
 {
@@ -20,10 +25,26 @@ namespace Pdf
         public void ConfigureServices(IServiceCollection services)
         {
             services.Configure<HtmlWatcherOptions>(Configuration.GetSection(HtmlWatcherOptions.HtmlWatcher));
-            services.AddHttpClient();
+
+            services.AddScoped<HtmlReader>();
+            services.AddScoped<PdfRequester>();
             services.AddScoped<HtmlProcessingService>();
-            // services.AddHostedService<HtmlWatcherBackgroundService>(); FileSystemWatcher does not detect changes on windows/docker
-            services.AddHostedService<HtmlPollingBackgroundService>();
+
+            services.AddHttpClient<PdfRequester>()
+                .SetHandlerLifetime(TimeSpan.FromMinutes(5))
+                .AddPolicyHandler(HttpClientRetryPolicy.GetJitterRetryPolicy());
+
+            var usePolling = Convert.ToBoolean(Configuration.GetSection($"{HtmlWatcherOptions.HtmlWatcher}:UsePolling").Value);
+
+            if (usePolling)
+            {
+                services.AddHostedService<HtmlPollingBackgroundService>();
+            }
+            else
+            {
+                services.AddHostedService<HtmlWatcherBackgroundService>();
+            }
+
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
