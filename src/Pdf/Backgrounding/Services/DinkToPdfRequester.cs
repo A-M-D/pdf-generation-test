@@ -6,12 +6,12 @@ using Microsoft.Extensions.Logging;
 
 namespace Backgrounding.Services
 {
-    public class PdfRequester
+    public class DinkToPdfRequester
     {
-        private readonly ILogger<PdfRequester> _logger;
+        private readonly ILogger<DinkToPdfRequester> _logger;
         private readonly HttpClient _httpClient;
 
-        public PdfRequester(ILogger<PdfRequester> logger, HttpClient httpClient)
+        public DinkToPdfRequester(ILogger<DinkToPdfRequester> logger, HttpClient httpClient)
         {
             _logger = logger;
             _httpClient = httpClient;
@@ -19,7 +19,7 @@ namespace Backgrounding.Services
 
         public async Task<Stream> GetPdf(StringContent json, CancellationToken cancellationToken = default)
         {
-            var url = "http://pdf:5000/puppeteer"; // TODO make variable
+            var url = "http://pdf:5000/dinktopdf"; // TODO make variable
             _logger.LogInformation($"Posting to {url}");
 
             var response = await _httpClient.PostAsync(url, json, cancellationToken);

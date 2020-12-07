@@ -3,13 +3,13 @@ using Pdf.Models;
 using PuppeteerSharp;
 using PuppeteerSharp.Media;
 
-namespace Services
+namespace Pdf.Services
 {
-    public static class PdfModelCreator
+    public static class PuppeteerPdfModelService
     {
         public static string GetBody(string html, string headerHtml, string footerHtml)
         {
-            var model = new PdfModel
+            var model = new PuppeteerPdfModel
             {
                 Html = html,
                 PdfOptions = GetPdfOptions(headerHtml, footerHtml)
@@ -23,14 +23,15 @@ namespace Services
             return new PdfOptions
             {
                 DisplayHeaderFooter = true,
+                PrintBackground = true,
                 HeaderTemplate = headerHtml,
                 FooterTemplate = footerHtml,
                 Format = PaperFormat.A4,
                 MarginOptions = new MarginOptions
                 {
-                    Top = "15mm",
+                    Top = "20mm",
                     Right = "0mm",
-                    Bottom = "15mm",
+                    Bottom = "20mm",
                     Left = "0mm"
                 }
             };

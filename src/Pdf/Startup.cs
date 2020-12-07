@@ -3,12 +3,15 @@ using Backgrounding;
 using Backgrounding.HostedServices;
 using Backgrounding.Models;
 using Backgrounding.Services;
+using DinkToPdf;
+using DinkToPdf.Contracts;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using Pdf.Services;
 using Policies;
 
 namespace Pdf
@@ -26,13 +29,22 @@ namespace Pdf
         {
             services.Configure<HtmlWatcherOptions>(Configuration.GetSection(HtmlWatcherOptions.HtmlWatcher));
 
-            services.AddScoped<HtmlReader>();
-            services.AddScoped<PdfRequester>();
-            services.AddScoped<HtmlProcessingService>();
+            services.AddSingleton<HtmlReader>();
+            services.AddSingleton<PuppeteerPdfRequester>();
+            services.AddSingleton<DinkToPdfRequester>();
+            services.AddSingleton<HtmlProcessingService>();
 
-            services.AddHttpClient<PdfRequester>()
+            services.AddHttpClient<PuppeteerPdfRequester>()
                 .SetHandlerLifetime(TimeSpan.FromMinutes(5))
                 .AddPolicyHandler(HttpClientRetryPolicy.GetJitterRetryPolicy());
+
+            services.AddHttpClient<DinkToPdfRequester>()
+                .SetHandlerLifetime(TimeSpan.FromMinutes(5))
+                .AddPolicyHandler(HttpClientRetryPolicy.GetJitterRetryPolicy());
+
+            services.AddSingleton<FileCommands>();
+            services.AddSingleton<PdfTools>();
+            services.AddSingleton(typeof(IConverter), (serviceProvider) => new SynchronizedConverter(serviceProvider.GetService<PdfTools>()));
 
             var usePolling = Convert.ToBoolean(Configuration.GetSection($"{HtmlWatcherOptions.HtmlWatcher}:UsePolling").Value);
 

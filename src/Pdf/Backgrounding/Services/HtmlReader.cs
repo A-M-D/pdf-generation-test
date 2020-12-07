@@ -1,12 +1,6 @@
 using System.IO;
-using System.Net.Http;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
-using Backgrounding.Models;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Services;
 
 namespace Backgrounding.Services
 {

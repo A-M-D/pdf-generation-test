@@ -1,10 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Pdf.Models;
@@ -24,7 +18,7 @@ namespace Pdf.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post(PdfModel model)
+        public async Task<IActionResult> Post(PuppeteerPdfModel model)
         {
             var launchOptions = GetLaunchOptions();
 

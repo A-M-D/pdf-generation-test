@@ -11,7 +11,10 @@ services:
     ports:
       - 5000
     environment:
+      - HtmlWatcher__HtmlWatcherPath=/html
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:5000
+      - DOTNET_USE_POLLING_FILE_WATCHER=1
     volumes:
       - ~/.vsdbg:/remote_debugger:rw
+      - ./html:/html

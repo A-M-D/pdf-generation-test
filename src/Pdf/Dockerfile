@@ -2,7 +2,6 @@ FROM mcr.microsoft.com/dotnet/aspnet:5.0-alpine AS base
 WORKDIR /app
 EXPOSE 5000
 ENV ASPNETCORE_URLS="http://*:5000"
-
 ENV PUPPETEER_EXECUTABLE_PATH "/usr/bin/chromium-browser"
 
 # Puppeteer
@@ -12,7 +11,16 @@ RUN apk update && apk upgrade && \
     apk add --no-cache \
       chromium \
       harfbuzz \
-      nss
+      nss \
+      fontconfig \
+      wkhtmltopdf
+
+RUN ln -s /usr/lib/libwkhtmltox.so.0 /usr/lib/libwkhtmltox.so
+
+# Install fonts
+RUN mkdir -p /usr/share/fonts/opentype
+COPY ./fonts/*.otf /usr/share/fonts/opentype/
+RUN fc-cache -f -v
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /src
