@@ -45,14 +45,14 @@
                 "build"
             ],
             "dockerBuild": {
-                "tag": "pdf:dev",
+                "tag": "pdfgenerationtest:dev",
                 "target": "base",
-                "dockerfile": "${workspaceFolder}/Dockerfile",
+                "dockerfile": "${workspaceFolder}/src/Pdf/Dockerfile",
                 "context": "${workspaceFolder}",
                 "pull": true
             },
             "netCore": {
-                "appProject": "${workspaceFolder}/Pdf.csproj"
+                "appProject": "${workspaceFolder}/src/Pdf/Pdf.csproj"
             }
         },
         {
@@ -62,13 +62,13 @@
                 "build"
             ],
             "dockerBuild": {
-                "tag": "pdf:latest",
-                "dockerfile": "${workspaceFolder}/Dockerfile",
+                "tag": "pdfgenerationtest:latest",
+                "dockerfile": "${workspaceFolder}/src/Pdf/Dockerfile",
                 "context": "${workspaceFolder}",
                 "pull": true
             },
             "netCore": {
-                "appProject": "${workspaceFolder}/Pdf.csproj"
+                "appProject": "${workspaceFolder}/src/Pdf/Pdf.csproj"
             }
         },
         {
@@ -77,13 +77,9 @@
             "dependsOn": [
                 "docker-build: debug"
             ],
-            "dockerRun": {
-                "ports": [
-                    { "hostPort": 5000, "containerPort": 5000 }
-                ]
-            },
+            "dockerRun": {},
             "netCore": {
-                "appProject": "${workspaceFolder}/Pdf.csproj",
+                "appProject": "${workspaceFolder}/src/Pdf/Pdf.csproj",
                 "enableDebugging": true
             }
         },
@@ -95,7 +91,7 @@
             ],
             "dockerRun": {},
             "netCore": {
-                "appProject": "${workspaceFolder}/Pdf.csproj"
+                "appProject": "${workspaceFolder}/src/Pdf/Pdf.csproj"
             }
         }
     ]

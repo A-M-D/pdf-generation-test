@@ -7,7 +7,7 @@ services:
     image: pdf
     build:
       context: .
-      dockerfile: src/Pdf/Dockerfile
+      dockerfile: src/Pdf/Dockerfile.dev
     ports:
       - 5000
     environment:
@@ -18,3 +18,4 @@ services:
     volumes:
       - ~/.vsdbg:/remote_debugger:rw
       - ./html:/html
+      - ./:/app/

@@ -38,11 +38,19 @@
         "request": "launch",
         "preLaunchTask": "docker-run: debug",
         "netCore": {
-            "appProject": "${workspaceFolder}/Pdf.csproj"
-        },
-        "dockerServerReadyAction": {
-            "uriFormat": "%s://localhost:%s/Pdf?url=https://google.com"
+            "appProject": "${workspaceFolder}/src/Pdf/Pdf.csproj"
         }
-    }
+    },
+    {
+        "name": "Docker .NET Core Attach",
+        "type": "docker",
+        "request": "attach",
+        "platform": "netCore",
+        "processName": "Pdf",
+        "containerName": "/pdf-generation-test_pdf_1",
+        "sourceFileMap": {
+            "/app/src": "${workspaceFolder}/src"
+        }
+    },
 ]
 }
