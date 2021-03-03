@@ -18,9 +18,9 @@ RUN apk update && apk upgrade && \
 RUN ln -s /usr/lib/libwkhtmltox.so.0 /usr/lib/libwkhtmltox.so
 
 # Install fonts
-RUN mkdir -p /usr/share/fonts/opentype
-COPY ./fonts/*.otf /usr/share/fonts/opentype/
-RUN fc-cache -f -v
+# RUN mkdir -p /usr/share/fonts/opentype
+# COPY ./fonts/*.otf /usr/share/fonts/opentype/
+# RUN fc-cache -f -v
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0-alpine AS build
 WORKDIR /src
